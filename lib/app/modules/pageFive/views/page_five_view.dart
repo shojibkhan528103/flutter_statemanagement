@@ -6,66 +6,70 @@ import '../controllers/page_five_controller.dart';
 class PageFiveView extends GetView<PageFiveController> {
   PageFiveView({super.key});
 
-  // Define a sample imgList
   final List<String> imgList = [
     'assets/slider3.jpg',
     'assets/slider2.jpg',
     'assets/slider1.jpg',
   ];
 
+  final RxInt _currentIndex = 0.obs;
+
   @override
   Widget build(BuildContext context) {
-    final List<Widget> imageSliders = imgList
-        .map((item) => Container(
-              margin: const EdgeInsets.all(5.0),
-              child: ClipRRect(
-                borderRadius: const BorderRadius.all(Radius.circular(5.0)),
-                child: Stack(
-                  children: <Widget>[
-                    Image.asset(item, fit: BoxFit.cover, width: 1000.0),
-                    Positioned(
-                      bottom: 0.0,
-                      left: 0.0,
-                      right: 0.0,
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Color.fromARGB(200, 0, 0, 0),
-                              Color.fromARGB(0, 0, 0, 0),
-                            ],
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.topCenter,
-                          ),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10.0, horizontal: 20.0),
-                        child: Text(
-                          'No. ${imgList.indexOf(item)} image',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ))
-        .toList();
-
     return Scaffold(
-      appBar: AppBar(title: const Text('Vertical Sliding Carousel Demo')),
-      body: CarouselSlider(
-        options: CarouselOptions(
-          aspectRatio: 2.0,
-          enlargeCenterPage: true,
-          scrollDirection: Axis.horizontal,
-          autoPlay: true,
-        ),
-        items: imageSliders,
+      appBar: AppBar(title: const Text('Full Screen Carousel with Indicator')),
+      body: Column(
+        children: [
+          Expanded(
+            child: CarouselSlider.builder(
+              itemCount: imgList.length,
+              itemBuilder: (context, index, realIndex) {
+                return Container(
+                  margin: const EdgeInsets.all(5.0),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10.0),
+                    child: Image.asset(
+                      imgList[index],
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                    ),
+                  ),
+                );
+              },
+              options: CarouselOptions(
+                aspectRatio: 3.0, // Makes each item fullscreen
+                viewportFraction: 1.0, // One item per screen
+                enlargeCenterPage: false,
+                autoPlay: true,
+                onPageChanged: (index, reason) {
+                  _currentIndex.value = index;
+                },
+              ),
+            ),
+          ),
+          Obx(
+                () => Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: imgList.asMap().entries.map((entry) {
+                return GestureDetector(
+                  onTap: () => _currentIndex.value = entry.key,
+                  child: Container(
+                    width: 12.0,
+                    height: 12.0,
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 10.0, horizontal: 4.0),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _currentIndex.value == entry.key
+                          ? Colors.blueAccent
+                          : Colors.grey,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ],
       ),
     );
   }
