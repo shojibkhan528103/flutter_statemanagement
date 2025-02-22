@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 
+import '../../../routes/app_pages.dart';
 import '../controllers/page_two_controller.dart';
 
 class PageTwoView extends GetView<PageTwoController> {
@@ -13,10 +14,15 @@ class PageTwoView extends GetView<PageTwoController> {
         title: const Text('PageTwoView'),
         centerTitle: true,
       ),
-      body: const Center(
-        child: Text(
-          'PageTwoView is working',
-          style: TextStyle(fontSize: 20),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            Get.toNamed(
+              Routes.PAGE_THREE,
+              arguments: {},
+            );
+          },
+          child: const Text('Page Three'),
         ),
       ),
     );
